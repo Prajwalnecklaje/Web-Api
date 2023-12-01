@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Add your styles for the dashboard here */
+  </style>
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <div>
+    <label for="search">Search:</label>
+    <input type="text" id="search" placeholder="Search...">
+    <button class="search-icon" onclick="search()">Search</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody">
+      <!-- User rows will be dynamically added here -->
+    </tbody>
+  </table>
+
+  <div>
+    <button class="first-page" onclick="navigateToPage(1)">First Page</button>
+    <button class="previous-page" onclick="navigateToPage(currentPage - 1)">Previous Page</button>
+    <span id="paginationInfo"></span>
+    <button class="next-page" onclick="navigateToPage(currentPage + 1)">Next Page</button>
+    <button class="last-page" onclick="navigateToPage(totalPages)">Last Page</button>
+  </div>
+
+  <div>
+    <button onclick="deleteSelected()">Delete Selected</button>
+  </div>
+
+  <script>
+    async function fetchData() {
+      try {
+        const response = await fetch('https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+      }
+    }
+
+    async function renderTable() {
+      const data = await fetchData();
+      const tableBody = document.getElementById('userTableBody');
+      tableBody.innerHTML = ''; // Clear existing rows
+
+      data.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input type="checkbox" class="select-checkbox"></td>
+          <td>${user.id}</td>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td>${user.role}</td>
+          <td>
+            <button class="edit" onclick="editRow(${user.id})">Edit</button>
+            <button class="delete" onclick="deleteRow(${user.id})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Implement other functions like search, pagination, editRow, deleteRow, deleteSelected, etc.
+
+    renderTable(); // Fetch and render data when the page loads
+  </script>
+</body>
+</html>
